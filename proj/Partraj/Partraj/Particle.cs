@@ -29,11 +29,16 @@ namespace Partraj
 
         internal List<Particle> Division()
         {
-            PointF v = new PointF(this.velo.Y, -this.velo.X);
+            double arg = Math.Atan2(velo.Y, velo.X) + Math.PI/2;
+            double v0 = 1e-3;
+            PointF vD = new PointF((float)(v0 * Math.Cos(arg)), (float)(v0 * Math.Sin(arg)));
+            PointF vA= this.velo.Add(vD);
+            PointF vB = this.velo.Add(vD.Negative());
+            
             return new List<Particle>
             {
-                new Particle(this.pos, v, this),
-                new Particle(this.pos, v.Negative(), this)
+                new Particle(this.pos, vA, this),
+                new Particle(this.pos, vB, this)
             };
         }
     }

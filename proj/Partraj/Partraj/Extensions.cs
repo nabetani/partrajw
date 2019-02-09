@@ -13,9 +13,17 @@ namespace Partraj
         {
             return new PointF(a.X + b.X, a.Y + b.Y);
         }
-        internal static PointF Negative(this PointF a)
+        internal static PointF Negative(this PointF p)
         {
-            return new PointF(-a.X, -a.Y);
+            return new PointF(-p.X, -p.Y);
+        }
+        internal static float Abs(this PointF p)
+        {
+            return (float)Math.Sqrt(p.Abs2());
+        }
+        internal static float Abs2(this PointF p)
+        {
+            return p.X * p.X + p.Y + p.Y;
         }
     }
 }

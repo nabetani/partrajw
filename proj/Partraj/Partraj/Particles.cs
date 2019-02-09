@@ -14,7 +14,7 @@ namespace Partraj
         {
             pas = new List<List<Particle>>();
             pas.Add(new List<Particle>());
-            Particle pa = new Particle(new PointF(0, 0), new PointF(0, 1e-2f), null);
+            Particle pa = new Particle(new PointF(0, 0), new PointF(0, 1e-10f), null);
             pas[0].Add(pa);
         }
 
