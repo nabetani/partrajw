@@ -58,6 +58,7 @@ namespace Partraj
                     a.Y += (float)(abs * Math.Sin(dir));
                 }
                 me.AddVelo(a);
+                me.SpeedUp((float)(1 + 1e-4));
             }
             Console.WriteLine(nextPas.Count());
         }

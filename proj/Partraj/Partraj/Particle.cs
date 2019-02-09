@@ -62,10 +62,12 @@ namespace Partraj
             return new Particle(this.pos.Add(this.velo), this.velo, this);
         }
 
+        static Random rng = new Random(1);
+
         internal List<Particle> Division()
         {
             double arg = Math.Atan2(velo.Y, velo.X) + Math.PI / 2;
-            double v0 = 1e-3;
+            double v0 = 1e-3 + (rng.NextDouble() - rng.NextDouble()) * 1e-4;
             PointF vD = new PointF((float)(v0 * Math.Cos(arg)), (float)(v0 * Math.Sin(arg)));
             PointF vA = this.velo.Add(vD);
             PointF vB = this.velo.Add(vD.Negative());
@@ -75,6 +77,12 @@ namespace Partraj
                 new Particle(this.pos, vA, this, CreateColor(vA)),
                 new Particle(this.pos, vB, this, CreateColor(vB))
             };
+        }
+
+        internal void SpeedUp(float v)
+        {
+            this.velo.X *= v;
+            this.velo.Y *= v;
         }
 
         internal void AddVelo(PointF a)
@@ -99,9 +107,9 @@ namespace Partraj
                 double w = weight * weight * weight * weight;
                 w *= w;
                 return Color.FromArgb(
-                    (int)((r * w + (1 - w)) * 255),
-                    (int)((g * w + (1 - w)) * 255),
-                    (int)((b * w + (1 - w)) * 255)
+                    (int)((r * w) * 255),
+                    (int)((g * w) * 255),
+                    (int)((b * w) * 255)
                 );
             }
         }

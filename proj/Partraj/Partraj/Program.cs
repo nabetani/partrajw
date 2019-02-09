@@ -21,7 +21,7 @@ namespace Partraj
             Bitmap bmp = new Bitmap(w, h, PixelFormat.Format24bppRgb);
             {
                 Graphics g = Graphics.FromImage(bmp);
-                g.Clear(Color.White);
+                g.Clear(Color.Black);
                 Draw(g, w, h);
             }
             bmp.Save("../../../../../hoge.png");
