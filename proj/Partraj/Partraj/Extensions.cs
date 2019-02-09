@@ -13,5 +13,9 @@ namespace Partraj
         {
             return new PointF(a.X + b.X, a.Y + b.Y);
         }
+        internal static PointF Negative(this PointF a)
+        {
+            return new PointF(-a.X, -a.Y);
+        }
     }
 }

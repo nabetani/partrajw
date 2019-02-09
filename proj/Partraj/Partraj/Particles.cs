@@ -14,7 +14,7 @@ namespace Partraj
         {
             pas = new List<List<Particle>>();
             pas.Add(new List<Particle>());
-            Particle pa = new Particle(new PointF(0, 0), new PointF(0, 1e-3f), null);
+            Particle pa = new Particle(new PointF(0, 0), new PointF(0, 1e-2f), null);
             pas[0].Add(pa);
         }
 
@@ -22,10 +22,18 @@ namespace Partraj
         {
             var lastPas = pas.Last();
             var nextPas = new List<Particle>();
+            bool division = t % 20 == 0;
             foreach(Particle last in lastPas)
             {
-                Particle pa = last.NextParticle();
-                nextPas.Add(pa);
+                if (division)
+                {
+                    nextPas.AddRange(last.Division());
+                }
+                else
+                {
+                    Particle pa = last.NextParticle();
+                    nextPas.Add(pa);
+                }
             }
             pas.Add(nextPas);
             Console.WriteLine(nextPas.Count());

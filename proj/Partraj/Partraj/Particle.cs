@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 
@@ -24,6 +25,16 @@ namespace Partraj
         internal Particle NextParticle()
         {
             return new Particle(this.pos.Add(this.velo), this.velo, this);
+        }
+
+        internal List<Particle> Division()
+        {
+            PointF v = new PointF(this.velo.Y, -this.velo.X);
+            return new List<Particle>
+            {
+                new Particle(this.pos, v, this),
+                new Particle(this.pos, v.Negative(), this)
+            };
         }
     }
 }
