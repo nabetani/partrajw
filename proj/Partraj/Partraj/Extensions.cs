@@ -13,6 +13,10 @@ namespace Partraj
         {
             return new PointF(a.X + b.X, a.Y + b.Y);
         }
+        internal static PointF Sub(this PointF a, PointF b)
+        {
+            return new PointF(a.X - b.X, a.Y - b.Y);
+        }
         internal static PointF Negative(this PointF p)
         {
             return new PointF(-p.X, -p.Y);
@@ -23,7 +27,7 @@ namespace Partraj
         }
         internal static float Abs2(this PointF p)
         {
-            return p.X * p.X + p.Y + p.Y;
+            return p.X * p.X + p.Y * p.Y;
         }
     }
 }

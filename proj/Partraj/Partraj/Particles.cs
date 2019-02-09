@@ -22,7 +22,7 @@ namespace Partraj
         {
             var lastPas = pas.Last();
             var nextPas = new List<Particle>();
-            bool division = t % 20 == 0;
+            bool division = t % 50 == 0;
             foreach(Particle last in lastPas)
             {
                 if (division)
@@ -36,6 +36,29 @@ namespace Partraj
                 }
             }
             pas.Add(nextPas);
+            foreach( Particle me in nextPas)
+            {
+                PointF a = new PointF(0, 0);
+                foreach (Particle o in nextPas)
+                {
+                    if ( o.Position == me.Position)
+                    {
+                        continue;
+                    }
+                    PointF vec = o.Position.Sub(me.Position);
+                    float dist = vec.Abs();
+                    double dir = Math.Atan2(vec.Y, vec.X);
+                    if (double.IsNaN(dir))
+                    {
+                        continue;
+                    }
+                    double abs0 = 1e-5 / (0.001 + dist);
+                    double abs = dist < 0.3 ? -abs0 : abs0;
+                    a.X += (float)(abs * Math.Cos(dir));
+                    a.Y += (float)(abs * Math.Sin(dir));
+                }
+                me.AddVelo(a);
+            }
             Console.WriteLine(nextPas.Count());
         }
 

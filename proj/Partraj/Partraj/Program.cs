@@ -16,8 +16,8 @@ namespace Partraj
 
         private void Run()
         {
-            int w = 1024;
-            int h = 1024;
+            int w = 1024*4;
+            int h = w;
             Bitmap bmp = new Bitmap(w, h, PixelFormat.Format24bppRgb);
             {
                 Graphics g = Graphics.FromImage(bmp);
@@ -30,7 +30,7 @@ namespace Partraj
         private void Draw(Graphics g, int w, int h)
         {
             Particles pas = new Particles();
-            const int maxTime = 200;
+            const int maxTime = 450;
             for( int t=0; t<maxTime; ++t)
             {
                 pas.Evolute(t);
@@ -41,16 +41,19 @@ namespace Partraj
         private void DrawParticles(Particles pas, int maxTime, Graphics g, int w, int h)
         {
             g.TranslateTransform(w / 2, h / 2);
-            float z = Math.Min(w, h)/2;
+            float z = Math.Min(w, h)*0.3f;
             g.ScaleTransform(z, z);
             g.CompositingQuality = CompositingQuality.HighQuality;
+            g.SmoothingMode = SmoothingMode.HighQuality;
             Pen pen = new Pen(Color.Green, 1e-2f);
+            pen.StartCap = pen.EndCap = LineCap.Round;
             for ( int t=1; t<maxTime; ++t)
             {
                 foreach( Particle pa in pas.ParticlesAt(t))
                 {
                     PointF cur = pa.Position;
                     PointF prev = pa.Prev.Position;
+                    pen.Color = pa.Color;
                     g.DrawLine(pen, cur, prev);
                 }
             }

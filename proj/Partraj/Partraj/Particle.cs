@@ -9,18 +9,52 @@ namespace Partraj
     {
         private PointF pos;
         private PointF velo;
-        private Particle prev;
+        private readonly Particle prev;
+        private readonly Color color;
 
         public Particle(PointF pos, PointF velo, Particle prev)
         {
             this.pos = pos;
             this.velo = velo;
             this.prev = prev;
+            this.color = prev == null ? CreateColor(velo) : prev.Color;
+        }
+
+        public Particle(PointF pos, PointF velo, Particle prev, Color col)
+        {
+            this.pos = pos;
+            this.velo = velo;
+            this.prev = prev;
+            this.color = col;
+        }
+
+        static private Color CreateColor(PointF v)
+        {
+            double dir = Math.Atan2(v.Y, v.X);
+            if (double.IsNaN(dir))
+            {
+                dir = 0;
+            }
+            int e(int x)
+            {
+                double phase = (dir / (Math.PI * 2) * 3 + x) % 3.0;
+                if (2<phase)
+                {
+                    return 0;
+                }
+                return (int)((Math.Cos( phase/2 * Math.PI*2)+1)*(255.0/2));
+            };
+            int red = e(0);
+            int green = e(1);
+            int blue = e(2);
+            return Color.FromArgb(red, green, blue);
         }
 
         internal Particle Prev { get { return prev; } }
 
         internal PointF Position { get { return pos; } }
+
+        public Color Color { get { return color; } }
 
         internal Particle NextParticle()
         {
@@ -37,9 +71,15 @@ namespace Partraj
             
             return new List<Particle>
             {
-                new Particle(this.pos, vA, this),
-                new Particle(this.pos, vB, this)
+                new Particle(this.pos, vA, this, CreateColor(vA)),
+                new Particle(this.pos, vB, this, CreateColor(vB))
             };
+        }
+
+        internal void AddVelo(PointF a)
+        {
+            this.velo.X += a.X;
+            this.velo.Y += a.Y;
         }
     }
 }
