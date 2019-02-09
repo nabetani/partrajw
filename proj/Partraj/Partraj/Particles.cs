@@ -23,7 +23,7 @@ namespace Partraj
             var lastPas = pas.Last();
             var nextPas = new List<Particle>();
             bool division = t % 50 == 0;
-            foreach(Particle last in lastPas)
+            foreach (Particle last in lastPas)
             {
                 if (division)
                 {
@@ -36,12 +36,12 @@ namespace Partraj
                 }
             }
             pas.Add(nextPas);
-            foreach( Particle me in nextPas)
+            foreach (Particle me in nextPas)
             {
                 PointF a = new PointF(0, 0);
                 foreach (Particle o in nextPas)
                 {
-                    if ( o.Position == me.Position)
+                    if (o.Position == me.Position)
                     {
                         continue;
                     }
