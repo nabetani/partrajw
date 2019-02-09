@@ -30,7 +30,7 @@ namespace Partraj
         private void Draw(Graphics g, int w, int h)
         {
             Particles pas = new Particles();
-            const int maxTime = 450;
+            const int maxTime = 50*9;
             for( int t=0; t<maxTime; ++t)
             {
                 pas.Evolute(t);
@@ -45,15 +45,19 @@ namespace Partraj
             g.ScaleTransform(z, z);
             g.CompositingQuality = CompositingQuality.HighQuality;
             g.SmoothingMode = SmoothingMode.HighQuality;
-            Pen pen = new Pen(Color.Green, 1e-2f);
+            Pen pen = new Pen(Color.Green);
             pen.StartCap = pen.EndCap = LineCap.Round;
             for ( int t=1; t<maxTime; ++t)
             {
+                Console.WriteLine("{0}/{1}", t, maxTime);
+                double d = t * 1.0 / (maxTime - 1);
+                double colWeight = d;
+                pen.Width = (float)((1-d)*1.0);
                 foreach( Particle pa in pas.ParticlesAt(t))
                 {
                     PointF cur = pa.Position;
                     PointF prev = pa.Prev.Position;
-                    pen.Color = pa.Color;
+                    pen.Color = pa.GetColor(colWeight);
                     g.DrawLine(pen, cur, prev);
                 }
             }
