@@ -9,6 +9,9 @@ namespace Partraj
 {
     class Program
     {
+        static readonly Random rng = new Random(Constants.randomSeed);
+        internal static Random Rng { get { return rng; } }
+
         static void Main(string[] args)
         {
             (new Program()).Run();
@@ -30,7 +33,7 @@ namespace Partraj
         private void Draw(Graphics g, int w, int h)
         {
             Particles pas = new Particles();
-            const int maxTime = 50 * 9;
+            const int maxTime = Constants.maxTime;
             for (int t = 0; t < maxTime; ++t)
             {
                 pas.Evolute(t);
@@ -41,10 +44,13 @@ namespace Partraj
         private void DrawParticles(Particles pas, int maxTime, Graphics g, int w, int h)
         {
             g.TranslateTransform(w / 2, h / 2);
-            float z = Math.Min(w, h) * 0.3f;
+            float z = Math.Min(w, h) / Constants.imageRange;
             g.ScaleTransform(z, z);
-            g.CompositingQuality = CompositingQuality.HighQuality;
-            g.SmoothingMode = SmoothingMode.HighQuality;
+            if (Constants.highQuality)
+            {
+                g.CompositingQuality = CompositingQuality.HighQuality;
+                g.SmoothingMode = SmoothingMode.HighQuality;
+            }
             Pen pen = new Pen(Color.Green);
             pen.StartCap = pen.EndCap = LineCap.Round;
             for (int t = 1; t < maxTime; ++t)
@@ -52,7 +58,7 @@ namespace Partraj
                 Console.WriteLine("{0}/{1}", t, maxTime);
                 double d = t * 1.0 / (maxTime - 1);
                 double colWeight = d;
-                pen.Width = (float)((1 - d) * 1.0);
+                pen.Width = (float)((1 - d) * Constants.penWidth);
                 foreach (Particle pa in pas.ParticlesAt(t))
                 {
                     PointF cur = pa.Position;

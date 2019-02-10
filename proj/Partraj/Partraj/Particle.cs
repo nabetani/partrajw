@@ -10,40 +10,40 @@ namespace Partraj
         private PointF pos;
         private PointF velo;
         private readonly Particle prev;
-        private readonly RgbType rgb;
 
         public Particle(PointF pos, PointF velo, Particle prev)
         {
             this.pos = pos;
             this.velo = velo;
             this.prev = prev;
-            this.rgb = prev == null ? CreateColor(velo) : prev.Rgb;
+            this.color = prev == null ? 0 : prev.color;
         }
 
-        private RgbType Rgb { get { return this.rgb; } }
-        private Particle(PointF pos, PointF velo, Particle prev, RgbType rgb)
+        private RgbType Rgb { get { return Particle.CreateColor(color); } }
+        internal double color;
+        private Particle(PointF pos, PointF velo, Particle prev, double color)
         {
             this.pos = pos;
             this.velo = velo;
             this.prev = prev;
-            this.rgb = rgb;
+            this.color = color;
         }
 
-        static private RgbType CreateColor(PointF v)
+        static private RgbType CreateColor(double dir)
         {
-            double dir = Math.Atan2(v.Y, v.X) * 360;
-            if (double.IsNaN(dir))
-            {
-                dir = 0;
-            }
             double e(int x)
             {
-                double phase = (dir / (Math.PI * 2) * 3 + x) % 3.0;
-                if (2 < phase)
+                double phase0 = (6 + (dir / (Math.PI * 2) * 300 + x) % 6.0) % 6.0;
+                double phase = phase0 % 3;
+                if (phase < 1)
                 {
-                    return 0;
+                    return phase;
                 }
-                return (Math.Cos(phase / 2 * Math.PI * 2) + 1) * 0.5;
+                if (phase < 2)
+                {
+                    return 2 - phase;
+                }
+                return phase0<3 ? 0 : 1;
             };
             return new RgbType(e(0), e(1), e(2));
         }
@@ -54,7 +54,7 @@ namespace Partraj
 
         public Color GetColor(double weight)
         {
-            return this.rgb.GetColor(weight);
+            return this.Rgb.GetColor(weight);
         }
 
         internal Particle NextParticle()
@@ -62,20 +62,19 @@ namespace Partraj
             return new Particle(this.pos.Add(this.velo), this.velo, this);
         }
 
-        static Random rng = new Random(1);
-
-        internal List<Particle> Division()
+        internal List<Particle> Division(double colSplit)
         {
             double arg = Math.Atan2(velo.Y, velo.X) + Math.PI / 2;
-            double v0 = 1e-3 + (rng.NextDouble() - rng.NextDouble()) * 1e-4;
+            double v0 = Constants.divisionV0 * (1 + (Program.Rng.NextDouble() - Program.Rng.NextDouble()) * 0.1);
             PointF vD = new PointF((float)(v0 * Math.Cos(arg)), (float)(v0 * Math.Sin(arg)));
             PointF vA = this.velo.Add(vD);
             PointF vB = this.velo.Add(vD.Negative());
 
+            double colDelta = Math.Pow(Math.PI/10, colSplit);
             return new List<Particle>
             {
-                new Particle(this.pos, vA, this, CreateColor(vA)),
-                new Particle(this.pos, vB, this, CreateColor(vB))
+                new Particle(this.pos, vA, this, this.color+colDelta),
+                new Particle(this.pos, vB, this, this.color-colDelta)
             };
         }
 
@@ -93,7 +92,9 @@ namespace Partraj
 
         private class RgbType
         {
-            double r, g, b;
+            private readonly double r;
+            private readonly double g;
+            private readonly double b;
 
             public RgbType(double r, double g, double b)
             {
@@ -104,8 +105,7 @@ namespace Partraj
 
             internal Color GetColor(double weight)
             {
-                double w = weight * weight * weight * weight;
-                w *= w;
+                double w = Math.Pow(weight, Constants.colorPower);
                 return Color.FromArgb(
                     (int)((r * w) * 255),
                     (int)((g * w) * 255),
